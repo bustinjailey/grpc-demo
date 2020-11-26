@@ -1,0 +1,25 @@
+syntax = "proto3";
+option java_package = "org.jbailey.grpcdemo.user.tags";
+
+service UserTags {
+  rpc GetTag(User) returns (Tag) {}
+  rpc GetTags(User) returns (stream Tag) {}
+  rpc UpdateTags(stream Tag) returns (TagSummary) {}
+
+  // This bidirectional streaming RPC is not a very real-world example
+  rpc TagsFlyingEverywhere(stream Tag) returns (stream Tag) {}
+}
+
+message User {
+  string id = 1;
+}
+
+message Tag {
+  string id = 1;
+  string name = 2;
+}
+
+message TagSummary {
+  int32 updated_count = 1;
+  int64 elapsed_time = 2;
+}
