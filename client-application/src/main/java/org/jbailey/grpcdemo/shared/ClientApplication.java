@@ -19,7 +19,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  * This module/application doesn't know what it wants to be.  Right now it is simply a main method which calls the
  * client from user-data.  In the real world it would be a restful API which returns JSON to a web client (or similar)
  */
-public class SharedDataServer {
+public class ClientApplication {
     public static void main(String[] args) throws IOException {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 7000)
                                                       .usePlaintext()

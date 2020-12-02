@@ -48,9 +48,9 @@
         </plugins>
     </build>
     <modules>
-        <module>user-data</module>
-        <module>user-data-client</module>
-        <module>shared-data</module>
+        <module>client-application</module>
+        <module>service-api</module>
+        <module>service</module>
     </modules>
 
     <dependencyManagement>
@@ -85,17 +85,17 @@
             </dependency>
             <dependency>
                 <groupId>org.jbailey.grpcdemo</groupId>
-                <artifactId>user-data</artifactId>
+                <artifactId>client-application</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jbailey.grpcdemo</groupId>
-                <artifactId>user-data-client</artifactId>
+                <artifactId>service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jbailey.grpcdemo</groupId>
-                <artifactId>shared-data</artifactId>
+                <artifactId>service-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
