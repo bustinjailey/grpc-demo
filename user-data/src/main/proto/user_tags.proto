@@ -1,5 +1,7 @@
 syntax = "proto3";
-option java_package = "org.jbailey.grpcdemo.user.tags";
+option java_package = "org.jbailey.grpcdemo.user.tags.v1";
+
+package tags.v1;
 
 service UserTags {
   rpc GetTag(User) returns (Tag) {}

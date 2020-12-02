@@ -1,16 +1,17 @@
 package org.jbailey.grpcdemo.user;
 
 import io.grpc.stub.StreamObserver;
-import org.jbailey.grpcdemo.user.tags.UserTagsGrpc;
-import org.jbailey.grpcdemo.user.tags.UserTagsOuterClass;
+import org.jbailey.grpcdemo.user.tags.v1.UserTagsGrpc;
+import org.jbailey.grpcdemo.user.tags.v1.UserTagsOuterClass;
+import org.lognet.springboot.grpc.GRpcService;
 
 import java.text.MessageFormat;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
-public class UserTagService extends UserTagsGrpc.UserTagsImplBase {
-
+@GRpcService
+public class UserTagGrpcService extends UserTagsGrpc.UserTagsImplBase {
 
     @Override
     public void getTag(UserTagsOuterClass.User request, StreamObserver<UserTagsOuterClass.Tag> responseObserver) {
@@ -24,16 +25,11 @@ public class UserTagService extends UserTagsGrpc.UserTagsImplBase {
 
     @Override
     public void getTags(UserTagsOuterClass.User request, StreamObserver<UserTagsOuterClass.Tag> responseObserver) {
-        long startTime = System.nanoTime();
         // Arbitrary number in loop just to see things work
         for (int i = 0; i < 4; i++) {
             responseObserver.onNext(getFakeTag());
         }
         responseObserver.onCompleted();
-        long endTime = System.nanoTime();
-
-        System.out.println(MessageFormat.format("Took {0}ms", NANOSECONDS.toMillis(endTime - startTime)));
-
     }
 
     @Override

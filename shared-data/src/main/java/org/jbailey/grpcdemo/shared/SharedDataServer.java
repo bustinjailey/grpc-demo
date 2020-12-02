@@ -2,12 +2,15 @@ package org.jbailey.grpcdemo.shared;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import org.jbailey.grpcdemo.user.tags.UserTagsGrpc;
-import org.jbailey.grpcdemo.user.tags.UserTagsOuterClass;
+import org.jbailey.grpcdemo.user.client.UserTagsClient;
+import org.jbailey.grpcdemo.user.tags.v1.UserTagsGrpc;
+import org.jbailey.grpcdemo.user.tags.v1.UserTagsOuterClass;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Iterator;
-import java.util.Timer;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -17,7 +20,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  * client from user-data.  In the real world it would be a restful API which returns JSON to a web client (or similar)
  */
 public class SharedDataServer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 7000)
                                                       .usePlaintext()
                                                       .build();
@@ -28,13 +31,15 @@ public class SharedDataServer {
                                                                   .setId(UUID.randomUUID().toString())
                                                                   .build();
 
-        // Call each RPC multiple times to compare response times
+        var client = new Retrofit.Builder()
+                .baseUrl("http://localhost:8080/")
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build()
+                .create(UserTagsClient.class);
+
         getSingleTag(blockingStub, fakeUser);
-        getSingleTag(blockingStub, fakeUser);
-        getSingleTag(blockingStub, fakeUser);
-        getMultipleTags(blockingStub, fakeUser);
-        getMultipleTags(blockingStub, fakeUser);
-        getSingleTag(blockingStub, fakeUser);
+        getMultipleTagsGrpc(blockingStub, fakeUser);
+        getMultipleTagsRest(client);
 
 
         // TODO: Implement call using asyncStub
@@ -43,7 +48,7 @@ public class SharedDataServer {
         System.exit(0);
     }
 
-    private static void getMultipleTags(UserTagsGrpc.UserTagsBlockingStub blockingStub, UserTagsOuterClass.User fakeUser) {
+    private static void getMultipleTagsGrpc(UserTagsGrpc.UserTagsBlockingStub blockingStub, UserTagsOuterClass.User fakeUser) {
         long startTime2 = System.nanoTime();
         Iterator<UserTagsOuterClass.Tag> tags = blockingStub.getTags(fakeUser);
         while (tags.hasNext()) {
@@ -51,7 +56,18 @@ public class SharedDataServer {
             System.out.println(tag);
         }
         long endTime2 = System.nanoTime();
-        System.out.println(MessageFormat.format("Getting multiple tags took {0}ms",
+        System.out.println(MessageFormat.format("Getting multiple tags via  gRPC took {0}ms",
+                                                NANOSECONDS.toMillis(endTime2 - startTime2)));
+    }
+
+    private static void getMultipleTagsRest(UserTagsClient client) throws IOException {
+        long startTime2 = System.nanoTime();
+
+        var result = client.getTags().execute().body();
+        System.out.println(result);
+
+        long endTime2 = System.nanoTime();
+        System.out.println(MessageFormat.format("Getting multiple tags via REST took {0}ms",
                                                 NANOSECONDS.toMillis(endTime2 - startTime2)));
     }
 
